@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from my_models import User, UserIn_Pydantic, User_Pydantic
 from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortoise
 from passlib.hash import bcrypt
+import uvicorn
+
 
 app = FastAPI()
 @app.get('/')
@@ -15,7 +17,6 @@ async def get_allusers():
 @app.get("/user/{user_id}")
 async def get_user(user_id: int):
     return await User_Pydantic.from_queryset_single(User.get(id=user_id))
-
 
 @app.post("/createuser",response_model=User_Pydantic)
 async def create_user(user: UserIn_Pydantic):
@@ -43,3 +44,6 @@ register_tortoise(
     generate_schemas = True,
     add_exception_handlers = True,
 )
+
+if __name__ == '__main__':
+    uvicorn.run(app,port=8000 , host="0.0.0.0")
